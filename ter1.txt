@@ -2,6 +2,8 @@ windows
 terminal
 shell
 
-
+application
+notepad
+eclipse
 
 thanks :)
