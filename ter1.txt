@@ -2,8 +2,14 @@ windows
 terminal
 shell
 
+
+os
+linux
+
+
 application
 notepad
 eclipse
+
 
 thanks :)
