@@ -1,6 +1,3 @@
 .DS_store
 .project
-
-
-
-*.aout
+*.out
