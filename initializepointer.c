@@ -12,7 +12,5 @@ int main()
 	{
 		printf("%c",p[t]);
 	}
-
-	
 	return 0;
 }
