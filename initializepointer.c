@@ -12,7 +12,5 @@ int main()
 	{
 		printf("%c",p[t]);
 	}
-
-	printf("branch");
 	return 0;
 }
