@@ -6,5 +6,6 @@ int main(){
 printf("ter");
 printf("hi");
 printf("hello");
+printf("namastee");
 return 0;
 }
