@@ -8,15 +8,16 @@
 
 int main()
 {
-	char c;
+	int c; //to check for EOF value
 
 	c=getchar();
 
-	while(c!='\0')
+	while(c!=EOF)
 	{
 		putchar(c);
 		c=getchar();
 	}
+
 
 	return 0;
 }
