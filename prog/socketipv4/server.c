@@ -12,7 +12,10 @@
 #include <errno.h>
 #include <stdio.h>
 
+#define server 1
+#ifndef server
 #define e(a) printf("%d\n",a)
+
 
 int main()
 {
@@ -22,8 +25,8 @@ int main()
 	socklen_t opt_sz,server_sz,client_sz, sz_chk_addrlen;
 	char chk_lclhst[INET_ADDRSTRLEN]={'\0'},lcalhst[INET_ADDRSTRLEN]={"127.0.0.1"};
 	//socket
-	server_fd=socket(AF_INET, SOCK_STREAM, 0);
-	if(server_fd<0)
+
+	if(0>(server_fd=socket(AF_INET, SOCK_STREAM, 0)))
 	{
 		perror("socket failed\n");
 		e(server_fd);
@@ -88,6 +91,10 @@ int main()
 			e(noofbyte);
 			return EXIT_FAILURE;
 		}
+		printf("no of bytes\n");
+		e(noofbyte);
+		printf("send digit\n");
+		e(digit);
 	//recv
 		digit++;
 
@@ -102,3 +109,4 @@ int main()
 	}
 	return 0;
 }
+#endif
