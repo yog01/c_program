@@ -51,8 +51,8 @@ int main()
 	sz_chk_addrlen=sizeof(server_addr.sin_addr);
 	//inet_ntop(AF_INET, &server_addr.sin_addr, chk_lclhst,sz_chk_addrlen);
 	printf("addres %s size%d\n",inet_ntoa(server_addr.sin_addr),sz_chk_addrlen);
-	//server_addr.sin_addr.s_addr=ntohl(INADDR_LOOPBACK); //study loop back
-	server_addr.sin_port=htons(2000);
+	//server_addr.sin_addr.s_addr=ntohl(INADDR_LOOPBACK);
+	server_addr.sin_port=htons(2001);
 	server_sz=sizeof(server_addr);
 	ret=bind(server_fd,(struct sockaddr*)&server_addr, server_sz);
 	if(ret<0)

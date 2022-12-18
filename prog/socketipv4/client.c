@@ -21,13 +21,13 @@
 #ifndef client
 int main()
 {
-	int file_desp=-1,ret=0,flag=0,nwf_des=0,digit=1,noofbytes,por_t=2000;
-	char port[BUFSIZ]={"2000"};
+	int file_desp=-1,ret=0,flag=0,nwf_des=0,digit=1,noofbytes,por_t=2001;
+	char port[BUFSIZ]={"2001"},client_addr_chk[INET_ADDRSTRLEN]={'\0'},client_addr_buf[INET_ADDRSTRLEN]={"127.0.0.1"};
 	struct sockaddr_in client_addr;
 	socklen_t sz_client,sz_server;
 	struct sockaddr server_addr;
-	struct addrinfo *hints,*addrs;
-
+	struct addrinfo *hints,*addrs,a_hints;
+	hints=&a_hints;//Initalize
 	memset(hints,0,sizeof(struct addrinfo));
 	hints->ai_family=AF_INET;
 	hints->ai_flags=AI_PASSIVE;
@@ -39,21 +39,23 @@ int main()
 		e(ret);
 		return EXIT_FAILURE;
 	}
-	printf("%d",addrs->ai_family);
 	//socket
 
-	if(0>(file_desp=socket(addrs->ai_family, addrs->ai_socktype, 0)))
+	if(0>(file_desp=socket(addrs->ai_family, addrs->ai_protocol, 0)))
 	{
 		perror("socket fail\n");
 		e(file_desp);
 		return EXIT_FAILURE;
 	}
-
 	//connect
 	client_addr.sin_family=AF_INET;
-	client_addr.sin_addr.s_addr=htonl(INADDR_LOOPBACK); //local host ip 127.0.0.1
+	client_addr.sin_addr.s_addr=htonl(INADDR_LOOPBACK); //local host ip 127.0.0.1 //a
+
+	//inet_pton(AF_INET,client_addr_buf,&client_addr.sin_addr.s_addr);
 	client_addr.sin_port=htons(por_t);
 	sz_client=sizeof(client_addr);
+	//inet_ntop(AF_INET,&client_addr.sin_addr.s_addr, client_addr_chk, sizeof(client_addr_chk));
+	printf("client adder %s addr sz%d\n",client_addr_chk,sz_client);
 	nwf_des=connect(file_desp, (struct sockaddr *)&client_addr,sz_client);
 	if(nwf_des<0)
 	{
@@ -85,7 +87,7 @@ int main()
 	e(noofbytes);
 	printf("recived digit\n");
 	e(digit);
-
+	close(file_desp);
 	return 0;
 }
 #endif
