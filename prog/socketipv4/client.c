@@ -49,7 +49,7 @@ int main()
 	}
 	//connect
 	client_addr.sin_family=AF_INET;
-	client_addr.sin_addr.s_addr=htonl(INADDR_LOOPBACK); //local host ip 127.0.0.1 //a
+	client_addr.sin_addr.s_addr=htonl(INADDR_LOOPBACK); //local host ip 127.0.0.1 //
 
 	//inet_pton(AF_INET,client_addr_buf,&client_addr.sin_addr.s_addr);
 	client_addr.sin_port=htons(por_t);
