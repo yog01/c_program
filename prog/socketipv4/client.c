@@ -20,19 +20,22 @@
 #ifndef client
 int main()
 {
-	int file_desp=-1,ret=0,flag=0,nwf_des=0,digit=1,noofbytes,por_t=2111;
-	char port[BUFSIZ]={"2111"},client_addr_chk[INET_ADDRSTRLEN]={'\0'},client_addr_buf[INET_ADDRSTRLEN]={"255.255.0.11"},hst_name[BUFSIZ]={"tacacs"},**ptr=NULL;
+	int file_desp=-1,ret=0,flag=0,nwf_des=0,digit=1,noofbytes,por_t=2111,svc_al_sz=0;
+	char port[BUFSIZ]={"2111"},client_addr_chk[INET_ADDRSTRLEN]={'\0'},client_addr_buf[INET_ADDRSTRLEN]={"255.255.0.11"},hst_name[BUFSIZ]={"kerberos"},**ptr_svc=NULL,**ptr_addrlist=NULL;
 	struct sockaddr_in client_addr;
 	socklen_t sz_client,sz_server;
 	struct sockaddr server_addr;
 	struct addrinfo *hints,*addrs,a_hints;
 	struct servent *ptr_svc_info,srvc_info;
+	struct hostent *ptr_host,host_info;
 	hints=&a_hints;//Initalize
 	ptr_svc_info=&srvc_info;
+	ptr_host=&host_info;
 	//information
 
 	memset(hints,0,sizeof(struct addrinfo));
 	memset(ptr_svc_info, 0, sizeof(struct servent));
+	memset(ptr_host, 0, sizeof(struct hostent));
 	hints->ai_family=AF_INET;
 	hints->ai_flags=AI_PASSIVE;
 	hints->ai_socktype=SOCK_STREAM;
@@ -50,14 +53,16 @@ int main()
 		printf("not able to get services\n");
 		return EXIT_FAILURE;
 	}
-	printf("----%s",hst_name);
-	printf("local host srv name%s",ptr_svc_info->s_name);
-	ptr=ptr_svc_info->s_aliases;
-	while(*ptr)
+	printf("local host srv name%s\n",ptr_svc_info->s_name);
+	printf("service port%d\n",ptr_svc_info->s_port);
+	ptr_svc=ptr_svc_info->s_aliases;
+	svc_al_sz=strlen(*ptr_svc);
+	while(*ptr_svc)
 	{
-		printf("aliase name %s",*ptr);
-		(*ptr)++;
+		printf("ptr to srvc%s\n",*ptr_svc);
+		ptr_svc++;
 	}
+
 
 
 	//socket
@@ -78,6 +83,20 @@ int main()
 	sz_client=sizeof(client_addr);
 	inet_ntop(AF_INET,&client_addr.sin_addr.s_addr, client_addr_chk, sizeof(client_addr_chk));
 	printf("client adder %s addr sz%ld\n",client_addr_chk,sizeof(client_addr.sin_addr.s_addr));
+
+	ptr_host=gethostbyaddr(&client_addr.sin_addr.s_addr, sizeof(client_addr.sin_addr),AF_INET);
+	if(!ptr_host)
+	{
+		perror("not to get host address\n");
+		return EXIT_FAILURE;
+	}
+	ptr_addrlist=ptr_host->h_addr_list;
+	while(0!=(*ptr_addrlist))
+	{
+		printf(" %s",inet_ntoa(*(struct in_addr*)*ptr_addrlist)); //address typecast char to struct addr* copy to
+		ptr_addrlist++;
+	}
+
 	nwf_des=connect(file_desp, (struct sockaddr *)&client_addr,sz_client);
 	if(nwf_des<0)
 	{

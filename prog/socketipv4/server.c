@@ -12,8 +12,9 @@
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
-#define server 1
+//#define server 1
 #ifndef server
 #define e(a) printf("%d\n",a)
 
@@ -26,6 +27,10 @@ int main()
 	volatile register int i=0;
 	socklen_t opt_sz,server_sz,client_sz, sz_chk_addrlen;
 	char chk_lclhst[INET_ADDRSTRLEN]={'\0'},lcalhst[INET_ADDRSTRLEN]={"127.0.0.1"};
+
+
+
+
 	//socket
 
 	if(0>(server_fd=socket(AF_INET, SOCK_STREAM, 0)))
