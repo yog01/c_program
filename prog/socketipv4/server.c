@@ -14,7 +14,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-//#define server 1
+#define server 1
 #ifndef server
 #define e(a) printf("%d\n",a)
 
@@ -22,8 +22,9 @@
 int main()
 {
 
-	struct sockaddr_in server_addr,client_addr;
+
 	int server_fd=-1,soc_opt=-1, flag=0,ret=-1,digit=0,nw_acp=-1,noofbyte=0,port=2111;
+	struct sockaddr_in server_addr={AF_INET,htonl(INADDR_ANY),htons(port)},client_addr;
 	volatile register int i=0;
 	socklen_t opt_sz,server_sz,client_sz, sz_chk_addrlen;
 	char chk_lclhst[INET_ADDRSTRLEN]={'\0'},lcalhst[INET_ADDRSTRLEN]={"127.0.0.1"};
@@ -54,11 +55,11 @@ int main()
 	}
 	memset(&server_addr, 0, sizeof(server_addr));
 	//bind
-	server_addr.sin_family=AF_INET;
-	server_addr.sin_addr.s_addr=htonl(INADDR_BROADCAST);
+		//server_addr.sin_family=AF_INET;
+		//server_addr.sin_addr.s_addr=htonl(INADDR_ANY);
 	//inet_aton(lcalhst, &server_addr.sin_addr);
 	//inet_pton(AF_INET, lcalhst, &server_addr.sin_addr);
-	sz_chk_addrlen=sizeof(server_addr.sin_addr.s_addr);
+		sz_chk_addrlen=sizeof(server_addr.sin_addr.s_addr);
 	//inet_ntop(AF_INET, &server_addr.sin_addr, chk_lclhst,sz_chk_addrlen);
 	printf("addres %s size%d\n",inet_ntoa(server_addr.sin_addr),sz_chk_addrlen);
 
@@ -95,7 +96,6 @@ int main()
 			close(server_fd);
 			return EXIT_FAILURE;
 		}
-
 	//send
 		noofbyte=sendto(nw_acp, &digit, sizeof(digit), flag, (struct sockaddr*)&client_addr, client_sz);
 		if(noofbyte==0)
