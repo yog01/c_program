@@ -13,21 +13,26 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <netinet/in.h>
+#include <time.h>
 
-#define server 1
+//#define server 1
 #ifndef server
 #define e(a) printf("%d\n",a)
 
+void calculate_time(void *t,int *t_time);
+void disp_time(int *time);
 
 int main()
 {
 
 
-	int server_fd=-1,soc_opt=-1, flag=0,ret=-1,digit=0,nw_acp=-1,noofbyte=0,port=2111;
-	struct sockaddr_in server_addr={AF_INET,htonl(INADDR_ANY),htons(port)},client_addr;
+	int server_fd=-1,soc_opt=-1, flag=0,ret=-1,digit=0,nw_acp=-1,noofbyte=0,port=2111,time[3]={0};
+	struct sockaddr_in server_addr,client_addr;
 	volatile register int i=0;
 	socklen_t opt_sz,server_sz,client_sz, sz_chk_addrlen;
 	char chk_lclhst[INET_ADDRSTRLEN]={'\0'},lcalhst[INET_ADDRSTRLEN]={"127.0.0.1"};
+	time_t ti_me=10,*crnt_time=&ti_me;
 
 
 
@@ -55,8 +60,8 @@ int main()
 	}
 	memset(&server_addr, 0, sizeof(server_addr));
 	//bind
-		//server_addr.sin_family=AF_INET;
-		//server_addr.sin_addr.s_addr=htonl(INADDR_ANY);
+		server_addr.sin_family=AF_INET;
+		server_addr.sin_addr.s_addr=htonl(INADDR_LOOPBACK);
 	//inet_aton(lcalhst, &server_addr.sin_addr);
 	//inet_pton(AF_INET, lcalhst, &server_addr.sin_addr);
 		sz_chk_addrlen=sizeof(server_addr.sin_addr.s_addr);
@@ -96,8 +101,9 @@ int main()
 			close(server_fd);
 			return EXIT_FAILURE;
 		}
+		calculate_time(crnt_time, time);
 	//send
-		noofbyte=sendto(nw_acp, &digit, sizeof(digit), flag, (struct sockaddr*)&client_addr, client_sz);
+		noofbyte=sendto(nw_acp, time, sizeof(time), flag, (struct sockaddr*)&client_addr, client_sz);
 		if(noofbyte==0)
 		{
 			perror("failed to send\n");
@@ -105,27 +111,73 @@ int main()
 			close(nw_acp);
 			return EXIT_FAILURE;
 		}
-		printf("no of bytes\n");
+		printf("no of bytes send\n");
 		e(noofbyte);
-		printf("send digit\n");
-		e(digit);
-	//recv
-		digit++;
+		disp_time(time);
 
-		noofbyte=recv(nw_acp, &digit, sizeof(digit), flag);
-		if(noofbyte==0)
+	//recv
+
+
+		//noofbyte=recv(nw_acp,time, sizeof(time), 0);
+		noofbyte=recvfrom(nw_acp, time, sizeof(time), 0, NULL,NULL);
+		if(0>noofbyte)
 		{
 			perror("recveded msg failed\n");
 			e(noofbyte);
 			close(nw_acp);
 			return EXIT_FAILURE;
 		}
+		printf("no of bytes rceived\n");
+		e(noofbyte);
+		disp_time(time);
 		if(4>i)
 		{
 			shutdown(nw_acp, SHUT_RDWR);
+			ret=close(nw_acp);
+			if(0>ret)
+			{
+				perror("close of filedesp fail\n");
+				return EXIT_FAILURE;
+			}
 		}
+
 		i++;
 	}
 	return 0;
 }
+
+void calculate_time(void *t,int *t_time)
+{
+
+	time_t *crnt_time=(time_t*)t;
+	time_t temp=*crnt_time,rem_min=0,i=0,sec=0;
+	time(&temp);
+	printf(" %ld",temp);
+
+	t_time[0]=temp/3600;
+	rem_min=temp-(t_time[0]*3600);
+	while(rem_min>0)
+	{
+		++t_time[1];
+		rem_min=rem_min/60;
+	}
+	while(i<3)
+	{
+		sec=(t_time[0]+t_time[1])*60;
+		++i;
+	}
+	t_time[2]=temp-sec;
+	printf("%d %d %d\n",t_time[0],t_time[1],t_time[2]);
+}
+
+void disp_time(int *time)
+{
+	int i=0;
+	for(i=0;i<2;++i)
+	{
+		printf("%d ",time[i]);
+	}
+	printf("\n");
+}
+
 #endif

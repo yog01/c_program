@@ -13,28 +13,31 @@
 #include <stdlib.h>
 #include <netdb.h>
 #include <string.h>
+#include <time.h>
 
 #define e(a) printf("%d\n",a);
 #define SIZE 50
+
 //#define client 1
 #ifndef client
 
 int get_host_time(char *host_addr,struct sockaddr_in *ptr_client_addr,int file_desp,int *flag,int *port);
-
+void disp_time(int *time);
 int main()
 {
-	int file_desp=-1,ret=0,flag=0,nwf_des=0,digit=1,noofbytes,por_t=2111,svc_al_sz=0,opt_name=1;
-	char port[SIZE]={"2111"},client_addr_chk[INET_ADDRSTRLEN]={'\0'},client_addr_buf[INET_ADDRSTRLEN]={"localhost"},serv_name[SIZE]={"time"},**ptr_svc=NULL,**ptr_addrlist=NULL;
+	int file_desp=-1,ret=0,flag=0,nwf_des=0,digit=1,noofbytes,por_t=2111,svc_al_sz=0,opt_name=1,i=0,time[3]={0};
+	char port[SIZE]={"2111"},client_addr_chk[INET_ADDRSTRLEN]={'\0'},client_addr_buf[INET_ADDRSTRLEN]={"185.125.190.56"},serv_name[SIZE]={"time"},**ptr_svc=NULL,**ptr_addrlist=NULL,buffer[SIZE]={"127.0.0.1"};
 	struct sockaddr_in client_addr,*ptr_client_addr;
 	socklen_t sz_client,sz_server,sz_opt_nm;
 	struct sockaddr server_addr;
-	struct addrinfo *hints,*addrs,a_hints;
+	struct addrinfo *hints,*addrs,a_hints,*p;
 	struct servent *ptr_svc_info,srvc_info;
 	struct hostent *ptr_host,host_info;
 	hints=&a_hints;//Initalize
 	ptr_svc_info=&srvc_info;
 	ptr_host=&host_info;
 	ptr_client_addr=&client_addr;
+	//time_t time=10,*crnt_time=&time;
 	//information
 
 	memset(hints,0,sizeof(struct addrinfo));
@@ -45,6 +48,7 @@ int main()
 	hints->ai_family=AF_INET;
 	hints->ai_flags=AI_PASSIVE;
 	hints->ai_socktype=SOCK_STREAM;
+	hints->ai_protocol=IPPROTO_TCP;
 	ret=getaddrinfo(NULL,port,hints,&addrs);
 	if(0>ret)
 	{
@@ -53,7 +57,7 @@ int main()
 		return EXIT_FAILURE;
 	}
 
-	ptr_svc_info=getservbyname(serv_name, "tcp"); //same as protocol and port service name
+	ptr_svc_info=getservbyname(serv_name, "udp"); //same as protocol and port service name
 	if(!ptr_svc_info)
 	{
 		printf("not able to get services\n");
@@ -70,28 +74,49 @@ int main()
 	}
 
 
-
-	//socket
-
-	if(0>(file_desp=socket(addrs->ai_family, addrs->ai_socktype, addrs->ai_protocol)))
+	for(p=addrs;p!=NULL;p=addrs->ai_next)
 	{
-		perror("socket fail\n");
-		e(file_desp);
-		close(file_desp);
-		return EXIT_FAILURE;
-	}
-	sz_opt_nm=sizeof(opt_name);
-	ret=setsockopt(file_desp, SOL_SOCKET, SO_REUSEADDR|SO_REUSEPORT, &opt_name, sz_opt_nm);
-	if(0>ret)
-	{
-		perror("set sockoption fail\n");
-		e(ret);
-		close(file_desp);
-		return EXIT_FAILURE;
+		//socket
+		file_desp=socket(addrs->ai_family, addrs->ai_socktype, addrs->ai_protocol);
+		if(0>file_desp)
+		{
+			perror("socket fail\n");
+			e(file_desp);
+			close(file_desp);
+			return EXIT_FAILURE;
+		}
+	//create socketby hostent
+	#ifdef client
+		gethostname(buffer, sizeof(buffer));
+		ptr_host=gethostbyname2(buffer, AF_INET);
+		while(NULL!=ptr_host->h_addr_list[i])
+		{
+			file_desp=socket(AF_INET, SOCK_STREAM, 0);
+			if(0>file_desp)
+			{
+				perror("socket creation fail\n");
+				e(file_desp);
+				close(file_desp);
+				return EXIT_FAILURE;
+			}
+			i++;
+		}
+	#endif
+		sz_opt_nm=sizeof(opt_name);
+		ret=setsockopt(file_desp, SOL_SOCKET, SO_REUSEADDR|SO_REUSEPORT, &opt_name, sz_opt_nm);
+		if(0>ret)
+		{
+			perror("set sockoption fail\n");
+			e(ret);
+			close(file_desp);
+			return EXIT_FAILURE;
+		}
 	}
 	//if check services or connect
-	nwf_des=get_host_time(client_addr_buf, ptr_client_addr, file_desp,&flag,&por_t);
-	/*//connect
+	//nwf_des=get_host_time(client_addr_buf, ptr_client_addr, file_desp,&flag,&por_t);
+
+	//connect
+
 	ptr_client_addr->sin_family=AF_INET;
 	ptr_client_addr->sin_addr.s_addr=htonl(INADDR_LOOPBACK); //local host ip 127.0.0.1 //
 	//inet_pton(AF_INET,client_addr_buf,&client_addr.sin_addr.s_addr);
@@ -116,18 +141,30 @@ int main()
 	}
 
 
-	nwf_des=connect(file_desp, (struct sockaddr *)ptr_client_addr,sz_client);
-	if(nwf_des<0)
+	ret=connect(file_desp, (struct sockaddr *)ptr_client_addr,sz_client);
+	if(ret<0)
 	{
 			perror("connect fail\n");
-			e(nwf_des);
+			e(ret);
 			close(file_desp);
 			return EXIT_FAILURE;
 	}
+
+	/*noofbytes=recv(nwf_des, buffer, sizeof(buffer),flag);
+	if(0>noofbytes)
+	{
+		perror("recv is fail\n");
+		e(noofbytes);
+		close(nwf_des);
+		return EXIT_FAILURE;
+	}
+
+	printf("readed data %s %d\n",buffer,noofbytes);
 */
+
 	//send
-	/*sz_server=sizeof(server_addr);
-	noofbytes=sendto(nwf_des, &digit,sizeof(digit),flag,&server_addr,sz_server);
+	sz_server=sizeof(server_addr);
+	noofbytes=sendto(file_desp, time,sizeof(time),flag,&server_addr,sz_server);
 	if(noofbytes<0)
 	{
 		perror("send fail\n");
@@ -135,11 +172,11 @@ int main()
 		close(nwf_des);
 		return EXIT_FAILURE;
 	}
-	printf("no of bytes\n");
+	printf("no of bytes send\n");
 	e(noofbytes);
-
+	disp_time(time);
 	//recv
-	noofbytes=recv(nwf_des, &digit, sizeof(digit), flag);
+	noofbytes=recv(file_desp, time, sizeof(time), flag);
 	if(noofbytes<0)
 	{
 		perror("recv fail\n");
@@ -147,13 +184,17 @@ int main()
 		close(nwf_des);
 		return EXIT_FAILURE;
 	}
-	printf("no of bytes\n");
+	printf("no of bytes recved \n");
 	e(noofbytes);
 	printf("recived digit\n");
-	e(digit);
-	*/
-
-	close(nwf_des);
+	disp_time(time);
+	shutdown(file_desp, SHUT_RDWR);
+	ret=close(file_desp);
+	if(0>ret)
+	{
+		perror("close file despfail\n");
+		return EXIT_FAILURE;
+	}
 	return 0;
 }
 
@@ -163,7 +204,7 @@ int get_host_time(char *host_addr,struct sockaddr_in *ptr_client_addr,int file_d
 	struct hostent *host;
 	socklen_t len=0,res=0;
 	char **ptr,buffer[SIZE]="\0";
-	char chk_service_addr[INET_ADDRSTRLEN]="\0";
+	char chk_service_addr[INET_ADDRSTRLEN]="\0",ipaddr_buffer[INET_ADDRSTRLEN]="\0";
 	struct sockaddr_in t_address;
 	host=gethostbyname(host_addr);
 
@@ -173,7 +214,7 @@ int get_host_time(char *host_addr,struct sockaddr_in *ptr_client_addr,int file_d
 		close(file_desp);
 		return EXIT_FAILURE;
 	}
-	ret=strcmp(host_addr, "localhost");
+	ret =  strcmp(host_addr, "localhost");
 	if(ret!=0)
 	{
 		ptr_client_addr->sin_family=AF_INET;
@@ -200,7 +241,7 @@ int get_host_time(char *host_addr,struct sockaddr_in *ptr_client_addr,int file_d
 		}
 		printf("sizeof address%d \n",len);
 	}
-	else
+		else
 	{
 		ptr=host->h_addr_list;
 		ptr_client_addr->sin_family=host->h_addrtype;
@@ -215,6 +256,7 @@ int get_host_time(char *host_addr,struct sockaddr_in *ptr_client_addr,int file_d
 		}
 
 	}
+
 
 
 	res=connect(file_desp, (struct sockaddr *)ptr_client_addr,len);
@@ -241,5 +283,14 @@ int get_host_time(char *host_addr,struct sockaddr_in *ptr_client_addr,int file_d
 	return file_desp;
 }
 
+void disp_time(int *time)
+{
+	int i=0;
+	for(i=0;i<2;++i)
+	{
+		printf("%d ",time[i]);
+	}
+	printf("\n");
+}
 
 #endif
