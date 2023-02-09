@@ -18,14 +18,15 @@
 #define e(a) printf("%d\n",a);
 #define SIZE 50
 
-//#define client 1
+#define client 1
 #ifndef client
 
 int get_host_time(char *host_addr,struct sockaddr_in *ptr_client_addr,int file_desp,int *flag,int *port);
+void calculate_time(void *t,int *t_time);
 void disp_time(int *time);
 int main()
 {
-	int file_desp=-1,ret=0,flag=0,nwf_des=0,digit=1,noofbytes,por_t=2111,svc_al_sz=0,opt_name=1,i=0,time[3]={0};
+	int file_desp=-1,ret=0,flag=0,digit=1,noofbytes,por_t=2111,svc_al_sz=0,opt_name=1,i=0,time[3]={0};
 	char port[SIZE]={"2111"},client_addr_chk[INET_ADDRSTRLEN]={'\0'},client_addr_buf[INET_ADDRSTRLEN]={"185.125.190.56"},serv_name[SIZE]={"time"},**ptr_svc=NULL,**ptr_addrlist=NULL,buffer[SIZE]={"127.0.0.1"};
 	struct sockaddr_in client_addr,*ptr_client_addr;
 	socklen_t sz_client,sz_server,sz_opt_nm;
@@ -37,7 +38,7 @@ int main()
 	ptr_svc_info=&srvc_info;
 	ptr_host=&host_info;
 	ptr_client_addr=&client_addr;
-	//time_t time=10,*crnt_time=&time;
+	time_t time_1=10,*ptr_time=&time_1;
 	//information
 
 	memset(hints,0,sizeof(struct addrinfo));
@@ -112,11 +113,10 @@ int main()
 			return EXIT_FAILURE;
 		}
 	}
-	//if check services or connect
+	//if check services or connect and file_desp to updated file_desp
 	//nwf_des=get_host_time(client_addr_buf, ptr_client_addr, file_desp,&flag,&por_t);
 
 	//connect
-
 	ptr_client_addr->sin_family=AF_INET;
 	ptr_client_addr->sin_addr.s_addr=htonl(INADDR_LOOPBACK); //local host ip 127.0.0.1 //
 	//inet_pton(AF_INET,client_addr_buf,&client_addr.sin_addr.s_addr);
@@ -149,19 +149,7 @@ int main()
 			close(file_desp);
 			return EXIT_FAILURE;
 	}
-
-	/*noofbytes=recv(nwf_des, buffer, sizeof(buffer),flag);
-	if(0>noofbytes)
-	{
-		perror("recv is fail\n");
-		e(noofbytes);
-		close(nwf_des);
-		return EXIT_FAILURE;
-	}
-
-	printf("readed data %s %d\n",buffer,noofbytes);
-*/
-
+	calculate_time(ptr_time, time);
 	//send
 	sz_server=sizeof(server_addr);
 	noofbytes=sendto(file_desp, time,sizeof(time),flag,&server_addr,sz_server);
@@ -169,7 +157,7 @@ int main()
 	{
 		perror("send fail\n");
 		e(noofbytes);
-		close(nwf_des);
+		close(file_desp);
 		return EXIT_FAILURE;
 	}
 	printf("no of bytes send\n");
@@ -181,7 +169,7 @@ int main()
 	{
 		perror("recv fail\n");
 		e(noofbytes);
-		close(nwf_des);
+		close(file_desp);
 		return EXIT_FAILURE;
 	}
 	printf("no of bytes recved \n");
@@ -195,9 +183,10 @@ int main()
 		perror("close file despfail\n");
 		return EXIT_FAILURE;
 	}
+
 	return 0;
 }
-
+#ifndef client
 int get_host_time(char *host_addr,struct sockaddr_in *ptr_client_addr,int file_desp,int *flag,int *port)
 {
 	int noofbyte=0,ret=0;
@@ -270,27 +259,47 @@ int get_host_time(char *host_addr,struct sockaddr_in *ptr_client_addr,int file_d
 	*flag=0; //for recv function
 
 
-	noofbyte=read(file_desp, buffer, sizeof(buffer));
+	//noofbyte=re(file_desp, buffer, sizeof(buffer));
+	noofbyte=recv(file_desp, buffer, sizeof(buffer), *flag);
 	if(0>noofbyte)
 	{
 		perror("recv failed\n");
 		e(noofbyte);
-		//close(file_desp);
+		close(file_desp);
 		shutdown(file_desp, SHUT_RDWR);
 		return EXIT_FAILURE;
 	}
 	printf("no of bytes %d time %s\n",noofbyte,buffer);
+	close(file_desp);
+	shutdown(file_desp, SHUT_RDWR);
 	return file_desp;
 }
-
+#endif
 void disp_time(int *time)
 {
 	int i=0;
-	for(i=0;i<2;++i)
+	for(i=0;i<3;++i)
 	{
 		printf("%d ",time[i]);
 	}
 	printf("\n");
 }
+void calculate_time(void *t,int *t_time)
+{
+	time_t *crnt_time=(time_t *)t,temp=0;
+	int min=0,hr=0,rem_min=0,sec=0;
 
+	time(crnt_time);
+	temp=*crnt_time;
+	t_time[0]=temp/3600;
+	rem_min=temp-(t_time[0]*3600);
+	while(rem_min>0)
+	{
+		t_time[1]++;
+		rem_min=rem_min/60;
+	}
+	sec=temp-(t_time[0]*3600+rem_min);
+	t_time[2]=temp-sec;
+
+}
 #endif
