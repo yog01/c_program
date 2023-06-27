@@ -18,7 +18,7 @@
 #define e(a) printf("%d\n",a);
 #define SIZE 50
 
-#define client 1
+#define client 0
 #ifndef client
 
 int get_host_time(char *host_addr,struct sockaddr_in *ptr_client_addr,int file_desp,int *flag,int *port);
