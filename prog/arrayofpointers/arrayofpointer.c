@@ -6,9 +6,7 @@ int main()
 
 	int *arr[2];
 
-	int i=0;
-
-
+	int i=0,j=0;
 
 		for(i=0;i<2;++i)
 		{
@@ -23,7 +21,7 @@ int main()
 	{
 		for(j=0;j<3;j++)
 		{
-			arr[i][j]=100;
+			arr[i][j]=i;
 			printf("%d",arr[i][j]);
 		}
 	}
