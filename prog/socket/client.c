@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <string.h>
 #define PORT 8080
+#define clie
+#ifndef clie
 int main()
 {
 
@@ -43,3 +45,4 @@ int main()
 
 	return 0;
 }
+#endif
