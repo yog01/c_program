@@ -1,0 +1,126 @@
+note.txt
+ Created on: 26-Apr-2024
+     Author: yo
+info:
+	To make address constant in thread memory are created.
+	Thread syncronization.
+	O_NONBLOCK for async transmission
+compile:
+	gcc threadfilelog.c -H threadfilelog.h -o thlog -pthread
+
+o/p:
+	timelog.txt
+	
+in th_crt address:th_id 0x7fff52db9340 da 0x5c50197a02a0
+in fun_time:usec4341092
+in fun time function:msec341 sec4 min0 hr0
+flnm ./24_5_2024:0:0:4:341.txt
+file is created 3
+in fun_time:usec8341401
+in fun time function:msec341 sec8 min0 hr0
+msec:341 noofby 64
+in fun_time:usec12341539
+in fun time function:msec341 sec12 min0 hr0
+msec:341 noofby 128
+in fun_time:usec16341658
+in fun time function:msec341 sec16 min0 hr0
+msec:341 noofby 192
+in fun_time:usec20341781
+in fun time function:msec341 sec20 min0 hr0
+msec:341 noofby 256
+in fun_time:usec24341909
+in fun time function:msec341 sec24 min0 hr0
+msec:341 noofby 320
+in fun_time:usec28342046
+in fun time function:msec342 sec28 min0 hr0
+msec:342 noofby 384
+in fun_time:usec32342178
+in fun time function:msec342 sec32 min0 hr0
+msec:342 noofby 448
+in fun_time:usec36342304
+in fun time function:msec342 sec36 min0 hr0
+msec:342 noofby 512
+in fun_time:usec40342432
+in fun time function:msec342 sec40 min0 hr0
+msec:342 noofby 576
+in fun_time:usec44342557
+in fun time function:msec342 sec44 min0 hr0
+msec:342 noofby 640
+in fun_time:usec48342735
+in fun time function:msec342 sec48 min0 hr0
+msec:342 noofby 704
+in fun_time:usec52342858
+in fun time function:msec342 sec52 min0 hr0
+msec:342 noofby 768
+in fun_time:usec56342987
+in fun time function:msec342 sec56 min0 hr0
+msec:342 noofby 832
+in fun_time:usec60343102
+in fun time function:msec343 sec0 min0 hr0
+msec:343 noofby 896
+in fun_time:usec64343231
+in fun time function:msec343 sec4 min1 hr0
+msec:343 noofby 960
+in fun_time:usec68343343
+in fun time function:msec343 sec8 min1 hr0
+msec:343 noofby 1024
+in fun_time:usec72343470
+in fun time function:msec343 sec12 min1 hr0
+flnm ./24_5_2024:0:1:12:343.txt
+file is created 3
+in fun_time:usec76343635
+in fun time function:msec343 sec16 min1 hr0
+msec:343 noofby 64
+in fun_time:usec80343810
+in fun time function:msec343 sec20 min1 hr0
+msec:343 noofby 128
+in fun_time:usec84343925
+in fun time function:msec343 sec24 min1 hr0
+msec:343 noofby 192
+in fun_time:usec88344056
+in fun time function:msec344 sec28 min1 hr0
+msec:344 noofby 256
+in fun_time:usec92344169
+in fun time function:msec344 sec32 min1 hr0
+msec:344 noofby 320
+in fun_time:usec96344295
+in fun time function:msec344 sec36 min1 hr0
+msec:344 noofby 384
+in fun_time:usec100344397
+in fun time function:msec344 sec40 min1 hr0
+msec:344 noofby 448
+in fun_time:usec104344525
+in fun time function:msec344 sec44 min1 hr0
+msec:344 noofby 512
+in fun_time:usec108344636
+in fun time function:msec344 sec48 min1 hr0
+msec:344 noofby 576
+in fun_time:usec112344869
+in fun time function:msec344 sec52 min1 hr0
+msec:344 noofby 640
+in fun_time:usec116344986
+in fun time function:msec344 sec56 min1 hr0
+msec:344 noofby 704
+in fun_time:usec120345125
+in fun time function:msec345 sec0 min2 hr0
+msec:345 noofby 768
+in fun_time:usec124345244
+in fun time function:msec345 sec4 min2 hr0
+msec:345 noofby 832
+in fun_time:usec128345363
+in fun time function:msec345 sec8 min2 hr0
+msec:345 noofby 896
+in fun_time:usec132345509
+in fun time function:msec345 sec12 min2 hr0
+msec:345 noofby 960
+in fun_time:usec136345635
+in fun time function:msec345 sec16 min2 hr0
+msec:345 noofby 1024
+in th_add function address: memory 0x78ef24000e10
+return address 0x78ef24000e10
+in th_crt address:th_id 0x7fff52db9348 da 0x78ef24000e10
+address:0x78ef24000e10 msec:0 sec:0 min:0 hr:0
+return address 0x78ef24000b90
+	
+
+ 
